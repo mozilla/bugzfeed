@@ -1,0 +1,5 @@
+*~
+*.pyc
+config.ini
+dist
+bugzfeed.egg-info
