@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<head>
+  <title>Bugzfeed Test</title>
+  <script src="jquery-1.10.2.min.js"></script>
+  <script src="example.js"></script>
+  <style>
+    #controlscontainer {
+      display: none;
+      padding-top: 5px;
+    }
+
+    #controls {
+      float: left;
+    }
+
+    #feedcontainer {
+      float: left;
+      padding-left: 20px;
+    }
+
+    #error {
+      color: red;
+    }
+
+    clear {
+      clear: both;
+    }
+
+    ul {
+      margin-top: 0px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Bugzfeed Test</h2>
+
+  <span id="connection"></span> <span id="error"></span>
+
+  <div id="bugzfeed"></div>
+
+  <div id="controlscontainer">
+    <div id="controls">
+      Subscribe to a bug: <form id="subscribeform"><input id="bug" type="text" size="8"></input> <button type="submit">go</button></form><br/><br/>
+      Subscriptions:<br/>
+      <div id="subscriptions"></div>
+    </div>
+    <div id="feedcontainer">
+      Feed:
+      <div id="feed"></div>
+    </div>
+    <div class="clear"></div>
+  </div>
+</body>
+</html>
