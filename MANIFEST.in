@@ -1,0 +1,4 @@
+include HACKING.md
+include README.md
+include config.ini.example
+recursive-include example *.html *.js
