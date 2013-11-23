@@ -1,9 +1,10 @@
 from __future__ import print_function
-from setuptools import setup
+
 import io
 import os
+import re
 
-import bugzfeed
+from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,11 +17,20 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+def find_version(*file_paths):
+    version_file = open(os.path.join(os.path.dirname(__file__),
+                                     *file_paths)).read()
+    version_match = re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]',
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
 long_description = read('README.md')
 
 setup(
     name='bugzfeed',
-    version=bugzfeed.__version__,
+    version=find_version('bugzfeed', '__init__.py'),
     url='http://github.com/mozilla/bugzfeed/',
     license='Mozilla Public License 2.0',
     author='Mark Cote',
