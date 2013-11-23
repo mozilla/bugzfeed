@@ -4,12 +4,12 @@
 
 import json
 
-from tornado import websocket
+import tornado.websocket
 
 from bugzfeed import __version__ as bugzfeed_version
 from bugzfeed.subscriptions import subscriptions, BadBugId
 
-class WebSocketHandler(websocket.WebSocketHandler):
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         decoded = json.loads(message)

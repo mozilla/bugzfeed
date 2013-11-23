@@ -3,16 +3,19 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import ConfigParser
-import optparse
 import sys
 
 import mozlog
 import tornado.ioloop
+import tornado.options
 import tornado.web
 
 from bugzfeed.pulse import ListenerThread
 from bugzfeed.subscriptions import subscriptions
 from bugzfeed.websocket import WebSocketHandler
+
+tornado.options.define('verbose', default=False, help='output debug messages',
+                       type=bool)
 
 application = tornado.web.Application([
     (r'/', WebSocketHandler),
@@ -67,6 +70,7 @@ def main(cfgfile, options):
     listener = ListenerThread(pulse_cfg, bug_updated)
     listener.start()
     log.info('Starting WebSocket server.')
+    log.debug('Debug logs enabled.')
     application.listen(port)
     try:
         ioloop.start()
@@ -75,14 +79,11 @@ def main(cfgfile, options):
 
 
 def cli():
-    parser = optparse.OptionParser(usage='%prog [options] <config file>')
-    parser.add_option('-v', '--verbose', action='store_true', default=False,
-                        help='output debug messages')
-    (options, args) = parser.parse_args()
+    args = tornado.options.parse_command_line()
     if not args:
-        parser.print_usage()
+        tornado.options.print_help()
         sys.exit(1)
-    main(args[0], options)
+    main(args[0], tornado.options.options)
 
 
 if __name__ == '__main__':
