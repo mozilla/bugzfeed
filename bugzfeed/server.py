@@ -58,6 +58,7 @@ def setup_logging(cfg, options):
 
 
 def main(cfgfile, options):
+    # FIXME: Don't require config file to be specified on the command line.
     cfg = ConfigParser.ConfigParser()
     cfg.read(cfgfile)
     log = setup_logging(cfg, options)
