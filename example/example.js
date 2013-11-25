@@ -121,7 +121,7 @@ function getChanges(msg) {
   // new_since argument expects one second *before*...blech.
   // Should be fixed with new unified history API call.
 
-  $.getJSON(bugUrl + '/history', function(data) {
+  $.getJSON(bugUrl + '/history?include_fields=when,who', function(data) {
     var history = findHistoryEntry(msg.when, data.bugs[0].history, 'when');
     if (!history) {
       return;
@@ -132,7 +132,7 @@ function getChanges(msg) {
     }
   });
 
-  $.getJSON(bugUrl + '/comment', function(data) {
+  $.getJSON(bugUrl + '/comment?include_fields=author,text,time', function(data) {
     var comment = findHistoryEntry(msg.when, data.bugs[msg.bug].comments,
                                    'time');
     if (!comment) {
@@ -141,7 +141,8 @@ function getChanges(msg) {
     updates.html(updates.html() + commentHtml(comment));
   });
 
-  $.getJSON(bugUrl + '/attachment', function(data) {
+  $.getJSON(bugUrl + '/attachment?include_fields=attacher,creation_time,'
+            + 'description,id,last_change_time', function(data) {
     var attachment = findHistoryEntry(msg.when, data.bugs[msg.bug],
                                       'last_change_time');
     if (!attachment) {
