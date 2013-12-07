@@ -19,6 +19,8 @@ def define_group_opt(group, name, **kwargs):
     kwargs['group'] = group
     tornado.options.define('%s_%s' % (group, name), **kwargs)
 
+tornado.options.define('address', default='',
+                       help='server IP address, defaults to 0.0.0.0', type=str)
 tornado.options.define('port', default=8080, help='server port', type=int)
 tornado.options.define('config', default=None, help='path to config file',
                        type=str,
@@ -59,7 +61,7 @@ def main(opts_global, opts_groups):
     listener.start()
     logging.info('Starting WebSocket server on port %d.' % opts_global['port'])
     logging.debug('Debug logs enabled.')
-    application.listen(opts_global['port'])
+    application.listen(opts_global['port'], address=opts_global['address'])
     try:
         ioloop.start()
     except KeyboardInterrupt:
