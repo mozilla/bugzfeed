@@ -18,13 +18,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         extra_attrs = {}
         try:
             if command == 'subscribe':
-                subscriptions().subscribe(decoded['bug'], self)
-                extra_attrs['bugs'] = subscriptions().subscriptions(self)
+                subscriptions.subscribe(decoded['bug'], self)
+                extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'unsubscribe':
-                subscriptions().unsubscribe(decoded['bug'], self)
-                extra_attrs['bugs'] = subscriptions().subscriptions(self)
+                subscriptions.unsubscribe(decoded['bug'], self)
+                extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'subscriptions':
-                extra_attrs['bugs'] = subscriptions().subscriptions(self)
+                extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'version':
                 extra_attrs['version'] = bugzfeed_version
             else:
@@ -38,4 +38,4 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         self.write_message(json.dumps(response))
 
     def on_close(self):
-        subscriptions().connection_closed(self)
+        subscriptions.connection_closed(self)

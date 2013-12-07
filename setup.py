@@ -36,7 +36,6 @@ setup(
     author='Mark Cote',
     install_requires=[
         'mozillapulse',
-        'mozlog>=1.4',
         'tornado',
     ],
     author_email='mcote@mozilla.com',

@@ -3,10 +3,9 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
+import logging
 
 from collections import defaultdict
-
-import mozlog
 
 class BadBugId(Exception):
     pass
@@ -17,7 +16,6 @@ class BugSubscriptions(object):
     def __init__(self):
         self.conn_bug_map = defaultdict(set)
         self.bug_conn_map = defaultdict(set)
-        self.log = mozlog.getLogger('bugzfeed')
 
     def subscribe(self, bug_id, connection):
         bug_id = self._bug_id(bug_id)
@@ -30,8 +28,8 @@ class BugSubscriptions(object):
             self.bug_conn_map[bug_id].remove(connection)
             self.conn_bug_map[connection].remove(bug_id)
         except KeyError:
-            self.log.warning('Failed to unsubscribe connection %s from bug %d.'
-                             % (connection, bug_id))
+            logging.warning('Failed to unsubscribe connection %s from bug %d.'
+                            % (connection, bug_id))
 
     def subscriptions(self, connection):
         if connection not in self.conn_bug_map:
@@ -48,8 +46,8 @@ class BugSubscriptions(object):
 
     def bug_updated(self, bug_id, when):
         for c in self.bug_conn_map[bug_id]:
-            self.log.debug('Alerting connection %d that bug %d changed at %s.'
-                           % (id(c), bug_id, when))
+            logging.debug('Alerting connection %d that bug %d changed at %s.'
+                          % (id(c), bug_id, when))
             c.write_message(json.dumps({'command': 'update', 'bug': bug_id,
                                         'when': when}))
 
@@ -63,12 +61,4 @@ class BugSubscriptions(object):
             raise BadBugId()
 
 
-_subscriptions = None
-
-def subscriptions():
-    """Ensures we can set up logging before the subscription manager is
-    created."""
-    global _subscriptions
-    if _subscriptions is None:
-        _subscriptions = BugSubscriptions()
-    return _subscriptions
+subscriptions = BugSubscriptions()

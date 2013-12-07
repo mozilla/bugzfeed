@@ -1,0 +1,8 @@
+# Settings for the default configuration fo the mozillapulse test vagrant box.
+# If not specified, the defaults in the mozillapulse package are used
+# (mozillapulse/mozillapulse/config.py).
+pulse_host = '192.168.33.10'
+pulse_port = 5672
+pulse_vhost = 'pulse'
+pulse_user = 'pulse'
+pulse_password = 'pulse'
