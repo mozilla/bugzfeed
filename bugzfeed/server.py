@@ -21,7 +21,7 @@ def define_group_opt(group, name, **kwargs):
 
 tornado.options.define('address', default='',
                        help='server IP address, defaults to 0.0.0.0', type=str)
-tornado.options.define('port', default=8080, help='server port', type=int)
+tornado.options.define('port', default=8844, help='server port', type=int)
 tornado.options.define('config', default=None, help='path to config file',
                        type=str,
                        callback=lambda path: \
