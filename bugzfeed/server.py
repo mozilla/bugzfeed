@@ -47,8 +47,11 @@ application = tornado.web.Application([
 def get_pulse_cfg(pulse_opts):
     # Preserve only options with values so that pulse config defaults can be
     # used.
-    return dict([(k, v) for (k, v) in pulse_opts.iteritems()
-                 if v is not None])
+    pulse_cfg = dict([(k, v) for (k, v) in pulse_opts.iteritems()
+                      if v is not None])
+    if not 'applabel' in pulse_cfg:
+        pulse_cfg['applabel'] = 'bugzfeed'
+    return pulse_cfg
 
 
 def main(opts_global, opts_groups):

@@ -35,15 +35,24 @@ setup(
     license='Mozilla Public License 2.0',
     author='Mark Cote',
     install_requires=[
-        'mozillapulse',
+        'mozillapulse>=0.80',
         'tornado',
     ],
     author_email='mcote@mozilla.com',
-    description='notification system for Bugzilla',
+    description='notification system for Bugzilla via WebSockets',
     long_description=long_description,
     packages=['bugzfeed'],
     include_package_data=True,
     platforms='any',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP',
+    ],
     entry_points={
         'console_scripts': [
             'bugzfeed-server = bugzfeed.server:cli'
