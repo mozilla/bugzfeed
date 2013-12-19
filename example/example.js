@@ -113,7 +113,7 @@ function attachmentHtml(attachment) {
 }
 
 function getChanges(msg) {
-  $('#feed').append('bug ' + msg.bug + ' changed:<br/>');
+  $('#feed').append('bug ' + msg.bug + ' changed at ' + msg.when + ':<br/>');
   var updates = $('<ul></ul>');
   $('#feed').append(updates);
 
