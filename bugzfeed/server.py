@@ -3,6 +3,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import socket
 import sys
 
 from collections import defaultdict
@@ -37,6 +38,14 @@ define_group_opt('pulse', 'password', default=None, help='pulse password',
                  type=str)
 define_group_opt('pulse', 'broker_timezone', default=None,
                  help='pulse timezone', type=str)
+define_group_opt('pulse', 'applabel', default=None,
+                 help='pulse queue name; defaults to '
+                 '"bugzfeed-<local hostname>"', type=str)
+define_group_opt('pulse', 'durable', default=False,
+                 help='use a durable queue in case of server interruptions',
+                 type=bool)
+define_group_opt('pulse', 'dev', default=False, help='use dev pulse exchange',
+                 type=bool)
 
 
 application = tornado.web.Application([
@@ -49,8 +58,8 @@ def get_pulse_cfg(pulse_opts):
     # used.
     pulse_cfg = dict([(k, v) for (k, v) in pulse_opts.iteritems()
                       if v is not None])
-    if not 'applabel' in pulse_cfg:
-        pulse_cfg['applabel'] = 'bugzfeed'
+    if not pulse_cfg.get('applabel'):
+        pulse_cfg['applabel'] = 'bugzfeed-%s' % socket.gethostname()
     return pulse_cfg
 
 
