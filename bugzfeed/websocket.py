@@ -20,13 +20,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         cb_args = []
         try:
             if command == 'subscribe':
-                cb = subscriptions.subscribe(decoded['bug'], self)
+                cb = subscriptions.subscribe(decoded['bugs'], self)
                 if decoded.get('since'):
                     cb = subscriptions.catch_up
-                    cb_args = [decoded['bug'], decoded['since'], self]
+                    cb_args = [decoded['bugs'], decoded['since'], self]
                 extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'unsubscribe':
-                subscriptions.unsubscribe(decoded['bug'], self)
+                subscriptions.unsubscribe(decoded['bugs'], self)
                 extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'subscriptions':
                 extra_attrs['bugs'] = subscriptions.subscriptions(self)
@@ -35,6 +35,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             else:
                 result = 'error'
                 extra_attrs['error'] = 'invalid command'
+        except KeyError, e:
+            result = 'error'
+            extra_attrs['error'] = 'missing mandatory arg: %s' % e
         except BadBugId:
             result = 'error'
             extra_attrs['error'] = 'invalid bug id; must be integer'

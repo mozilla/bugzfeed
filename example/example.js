@@ -8,8 +8,11 @@ var websocket;
 
 function init() {
   $('#subscribeform').submit(function() {
-    subscribe($('#bug').val());
+    subscribe($('#bug').val().split(',')
+                             .map(function(x) { return parseInt(x); }),
+              $('#since').val());
     $('#bug').val('');
+    $('#since').val('');
     return false;
   });
   showDisconnected();
@@ -192,12 +195,12 @@ function displaySubscriptions(msg) {
   }
 }
 
-function subscribe(bug) {
-  doSend(JSON.stringify({command: "subscribe", bug: bug}));
+function subscribe(bugs, since) {
+  doSend(JSON.stringify({command: "subscribe", bugs: bugs, since: since}));
 }
 
 function unsubscribe(bug) {
-  doSend(JSON.stringify({command: 'unsubscribe', bug: bug}));
+  doSend(JSON.stringify({command: 'unsubscribe', bugs: bug}));
 }
 
 window.addEventListener("load", init, false);
