@@ -16,9 +16,14 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         command = decoded['command']
         result = 'ok'
         extra_attrs = {}
+        cb = None
+        cb_args = []
         try:
             if command == 'subscribe':
-                subscriptions.subscribe(decoded['bug'], self)
+                cb = subscriptions.subscribe(decoded['bug'], self)
+                if decoded.get('since'):
+                    cb = subscriptions.catch_up
+                    cb_args = [decoded['bug'], decoded['since'], self]
                 extra_attrs['bugs'] = subscriptions.subscriptions(self)
             elif command == 'unsubscribe':
                 subscriptions.unsubscribe(decoded['bug'], self)
@@ -36,6 +41,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         response = {'result': result, 'command': command}
         response.update(extra_attrs)
         self.write_message(json.dumps(response))
+        if cb:
+            cb(*cb_args)
 
     def on_close(self):
         subscriptions.connection_closed(self)
