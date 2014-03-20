@@ -12,6 +12,7 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 
+from bugzfeed.cache import MessageCache
 from bugzfeed.pulse import ListenerThread
 from bugzfeed.subscriptions import subscriptions
 from bugzfeed.websocket import WebSocketHandler
@@ -27,6 +28,8 @@ tornado.options.define('config', default=None, help='path to config file',
                        type=str,
                        callback=lambda path: \
                            tornado.options.parse_config_file(path, final=False))
+tornado.options.define('cache', default='bugzfeed_cache.json',
+                       help='path to cache file', type=str)
 
 define_group_opt('pulse', 'host', default=None, help='pulse host name or IP',
                  type=str)
@@ -65,6 +68,7 @@ def get_pulse_cfg(pulse_opts):
 
 def main(opts_global, opts_groups):
     pulse_cfg = get_pulse_cfg(opts_groups['pulse'])
+    subscriptions.message_cache = MessageCache(opts_global['cache'])
     ioloop = tornado.ioloop.IOLoop.instance()
     def bug_updated(updates):
         ioloop.add_callback(subscriptions.update, updates)
