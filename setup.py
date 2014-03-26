@@ -35,7 +35,7 @@ setup(
     license='Mozilla Public License 2.0',
     author='Mark Cote',
     install_requires=[
-        'mozillapulse>=0.80',
+        'mozillapulse>=0.90',
         'tornado',
     ],
     author_email='mcote@mozilla.com',
