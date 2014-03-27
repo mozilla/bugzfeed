@@ -28,7 +28,7 @@ class ListenerThread(threading.Thread):
             start_time = time.time()
             try:
                 self.consumer.listen()
-            except IOError, socket.error:
+            except (IOError, socket.error):
                 # Common to be disconnected every 10 minutes or so, so
                 # don't necessarily log anything.
                 pass
