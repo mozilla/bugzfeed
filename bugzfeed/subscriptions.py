@@ -65,13 +65,14 @@ class BugSubscriptions(object):
 
     @staticmethod
     def _bug_ids(bug_ids):
-        if isinstance(bug_ids, int):
-            return [bug_ids]
+        if isinstance(bug_ids, int) or isinstance(bug_ids, basestring):
+            bug_ids = [bug_ids]
         if isinstance(bug_ids, list):
             try:
                 return [int(i) for i in bug_ids]
-            except ValueError:
+            except (TypeError, ValueError):
                 raise BadBugId()
+        return []
 
 
 subscriptions = BugSubscriptions()
