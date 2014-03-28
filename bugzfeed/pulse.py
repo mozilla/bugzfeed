@@ -21,6 +21,7 @@ class ListenerThread(threading.Thread):
 
     def run(self):
         def cb(body, message):
+            message.ack()
             self.cb((body['payload']['id'], body['payload']['delta_ts']))
         self.consumer.configure(topic='#', callback=cb)
 
