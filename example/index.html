@@ -18,7 +18,7 @@
       float: left;
     }
 
-    #feedcontainer {
+    #subcontainer {
       float: left;
       padding-left: 20px;
     }
@@ -27,12 +27,18 @@
       color: red;
     }
 
-    clear {
+    .clear {
       clear: both;
     }
 
     ul {
       margin-top: 0px;
+    }
+
+    span.sub {
+      padding: 3px;
+      background-color: #ccccff;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -46,14 +52,16 @@
   <div id="controlscontainer">
     <div id="controls">
       Subscribe to bugs: <form id="subscribeform"><input id="bug" type="text" size="8"></input> <input id="since" type="text" size="22" placeholder="YYYY-MM-DDTHH:MM:SS (in UTC)"></input> <button type="submit">go</button></form><br><br>
+    </div>
+    <div id="subcontainer">
       Subscriptions:<br>
       <div id="subscriptions"></div>
     </div>
-    <div id="feedcontainer">
-      Feed:
-      <div id="feed"></div>
-    </div>
     <div class="clear"></div>
+  </div>
+  <div id="feedcontainer">
+    Feed:
+    <div id="feed"></div>
   </div>
 </body>
 </html>

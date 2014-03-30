@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var wsUri = 'ws://localhost:8844/';
-var bmoRestUrl = 'http://localhost:8080/bmo/rest';
+var wsUri = 'ws://bugzfeed.mozilla.org/';
+var bmoRestUrl = 'https://bugzilla.mozilla.org/rest';
 var websocket;
 
 function init() {
@@ -116,7 +116,7 @@ function attachmentHtml(attachment) {
 }
 
 function getChanges(msg) {
-  $('#feed').append('bug ' + msg.bug + ' changed at ' + msg.when + ':<br/>');
+  $('#feed').append('bug ' + msg.bug + ' changed at ' + msg.when + ':<br>');
   var updates = $('<ul></ul>');
   $('#feed').append(updates);
 
@@ -185,12 +185,17 @@ function displaySubscriptions(msg) {
   if (msg.bugs.length == 0) {
     $('#subscriptions').text('None');
   } else {
-    var button;
+    var button, span;
     for (var i = 0; i < msg.bugs.length; i++) {
+      span = $('<span class="sub"></span>');
       button = $('<button id="del' + msg.bugs[i] + '">X</button>');
       button.click(function() { unsubscribe($(this).attr('id').slice(3)); });
-      $('#subscriptions').append(button);
-      $('#subscriptions').append(' ' + msg.bugs[i] + '<br/>');
+      span.append(button);
+      span.append(' ' + msg.bugs[i]);
+      $('#subscriptions').append(span);
+      if (i < msg.bugs.length - 1) {
+        $('#subscriptions').append(' ');
+      }
     }
   }
 }
