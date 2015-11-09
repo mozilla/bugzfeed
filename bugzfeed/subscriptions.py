@@ -4,8 +4,10 @@
 
 import json
 import logging
-
 from collections import defaultdict
+
+from bugzfeed.cache import Message
+
 
 class BadBugId(Exception):
     pass
@@ -16,13 +18,10 @@ class BugSubscriptions(object):
     def __init__(self):
         self.conn_bug_map = defaultdict(set)
         self.bug_conn_map = defaultdict(set)
-        self.message_cache = None
 
     def catch_up(self, bug_ids, since, connection):
-        if not self.message_cache:
-            return
-        for m in self.message_cache.query(self._bug_ids(bug_ids), since):
-            connection.write_message(json.dumps(m))
+        for m in Message.query(self._bug_ids(bug_ids), since):
+            connection.write_message(m)
 
     def subscribe(self, bug_ids, connection):
         bug_ids = self._bug_ids(bug_ids)
@@ -55,13 +54,11 @@ class BugSubscriptions(object):
 
     def bug_updated(self, bug_id, when):
         msg = {'command': 'update', 'bug': bug_id, 'when': when}
-        txt = json.dumps(msg)
-        if self.message_cache:
-            self.message_cache.update(msg)
+        Message.update(msg)
         for c in self.bug_conn_map[bug_id]:
             logging.debug('Alerting connection %d that bug %d changed at %s.'
                           % (id(c), bug_id, when))
-            c.write_message(txt)
+            c.write_message(json.dumps(msg))
 
     @staticmethod
     def _bug_ids(bug_ids):

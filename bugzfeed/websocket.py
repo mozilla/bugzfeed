@@ -9,7 +9,12 @@ import tornado.websocket
 from bugzfeed import __version__ as bugzfeed_version
 from bugzfeed.subscriptions import subscriptions, BadBugId
 
+
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
+
+    def check_origin(self, origin):
+        '''Accept all cross-origin traffic.'''
+        return True
 
     def on_message(self, message):
         decoded = json.loads(message)

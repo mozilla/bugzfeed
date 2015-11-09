@@ -8,6 +8,7 @@ from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')
@@ -16,6 +17,7 @@ def read(*filenames, **kwargs):
         with io.open(filename, encoding=encoding) as f:
             buf.append(f.read())
     return sep.join(buf)
+
 
 def find_version(*file_paths):
     version_file = open(os.path.join(os.path.dirname(__file__),
@@ -35,8 +37,12 @@ setup(
     license='Mozilla Public License 2.0',
     author='Mark Cote',
     install_requires=[
-        'mozillapulse>=0.90',
-        'tornado',
+        'amqp==1.4.7',
+        'kombu==3.0.29',
+        'mozillapulse==1.2.2',
+        'psycopg2==2.6.1',
+        'SQLAlchemy==1.0.9',
+        'tornado==4.3',
     ],
     author_email='mcote@mozilla.com',
     description='notification system for Bugzilla via WebSockets',

@@ -2,35 +2,48 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import errno
 import json
 
-class MessageCache(object):
+from sqlalchemy import create_engine, Column, DateTime, Integer, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-    MAX_MESSAGES = 10000
+from bugzfeed import config
 
-    def __init__(self, filename):
-        self.filename = filename
-        self.messages = []
-        self.load()
+Base = declarative_base()
+engine = create_engine(config.database_url)
+Session = sessionmaker(bind=engine)
 
-    def load(self):
-        try:
-            self.messages = json.loads(file(self.filename, 'r').read())
-        except IOError, e:
-            if e.errno != errno.ENOENT:
-                raise
-            self.messages = []
 
-    def flush(self):
-        file(self.filename, 'w').write(json.dumps(self.messages))
+class Message(Base):
 
-    def update(self, message):
-        self.messages.append(message)
-        self.messages = self.messages[-self.MAX_MESSAGES:]
-        self.flush()
+    __tablename__ = 'messages'
+    id = Column(Integer, primary_key=True)
+    message = Column(Text)
+    bug = Column(Integer)
+    when = Column(DateTime)
 
-    def query(self, bug_ids, since):
-        for m in self.messages:
-            if m['bug'] in bug_ids and m['when'] >= since:
-                yield m
+    @classmethod
+    def update(cls, message):
+        session = Session()
+        m = Message(message=json.dumps(message), bug=message['bug'],
+                    when=message['when'])
+        session.add(m)
+        last_id = session.query(Message.id).order_by(
+            Message.id.desc()).first().id
+        session.query(Message).filter(
+            Message.id <= (last_id - config.max_messages)).delete()
+        session.commit()
+        session.close()
+
+    @classmethod
+    def query(cls, bug_ids, since):
+        '''Generator that yields messages, in JSON format.'''
+        session = Session()
+        for m in session.query(Message.message).filter(
+                Message.bug.in_(bug_ids), Message.when >= since):
+            yield m.message
+        session.close()
+
+
+Base.metadata.create_all(engine)

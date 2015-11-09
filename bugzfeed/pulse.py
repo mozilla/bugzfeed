@@ -9,6 +9,7 @@ import time
 
 from mozillapulse.consumers import SimpleBugzillaConsumer
 
+
 class ListenerThread(threading.Thread):
 
     RETRY_TIMEOUT_SEC = 30
