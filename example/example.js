@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var prodWsUri = 'ws://bugzfeed.mozilla.org/';
+var prodWsUri = 'wss://bugzfeed.mozilla.org/';
 var localWsUri = 'ws://localhost:5000/';
+var herokuWsUri = 'wss://bugzfeed.herokuapp.com/';
 
-var wsUri = localWsUri;
+var wsUri = herokuWsUri;
 
 var bmoRestUrl = 'https://bugzilla.mozilla.org/rest';
 var websocket;
