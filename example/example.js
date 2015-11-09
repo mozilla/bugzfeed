@@ -41,6 +41,7 @@ function onOpen(evt) {
 }
 
 function onClose(evt) {
+  // FIXME: Store time of last message and reconnect here.
   var error = '';
   if (evt.code == 1006) {
     error = 'connection abnormally terminated';
@@ -161,7 +162,8 @@ function getChanges(msg) {
 }
 
 function showConnected() {
-  $('#connection').html('Connected. <button id="disconnect">disconnect</button>');
+  $('#connection').html('Connected to ' + wsUri +
+                        '. <button id="disconnect">disconnect</button>');
   $('#disconnect').click(function() { websocket.close(); });
   $('#controlscontainer').show();
 }
