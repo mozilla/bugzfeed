@@ -7,7 +7,8 @@ import socket
 import threading
 import time
 
-from mozillapulse.consumers import SimpleBugzillaConsumer
+from mozillapulse.config import PulseConfiguration
+from mozillapulse.consumers import GenericConsumer
 
 
 class ListenerThread(threading.Thread):
@@ -18,13 +19,19 @@ class ListenerThread(threading.Thread):
     def __init__(self, cfg, cb):
         threading.Thread.__init__(self)
         self.cb = cb
-        self.consumer = SimpleBugzillaConsumer(**cfg)
+        self.consumer = GenericConsumer(PulseConfiguration(**cfg),
+                                        ['exchange/bugzilla/simple',
+                                         'exchange/bugzilla/simple/dev'],
+                                        **cfg)
 
     def run(self):
         def cb(body, message):
             message.ack()
-            self.cb((body['payload']['id'], body['payload']['delta_ts']))
-        self.consumer.configure(topic='#', callback=cb)
+            self.cb({'bug': body['payload']['id'],
+                     'when': body['payload']['delta_ts'],
+                     'dev': body['_meta']['exchange'].endswith('dev')})
+
+        self.consumer.configure(topic=['#', '#'], callback=cb)
 
         while True:
             start_time = time.time()

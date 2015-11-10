@@ -12,8 +12,8 @@ import tornado.web
 
 from bugzfeed import config
 from bugzfeed.pulse import ListenerThread
-from bugzfeed.subscriptions import subscriptions
-from bugzfeed.websocket import WebSocketHandler
+from bugzfeed.subscriptions import update_subscriptions
+from bugzfeed.websocket import DevWebSocketHandler, WebSocketHandler
 
 
 tornado.options.define('address', default='0.0.0.0',
@@ -22,6 +22,7 @@ tornado.options.define('address', default='0.0.0.0',
 tornado.options.define('port', default=8844, help='server port', type=int)
 
 application = tornado.web.Application([
+    (r'/dev/', DevWebSocketHandler),
     (r'/', WebSocketHandler),
 ])
 
@@ -30,8 +31,8 @@ def main():
     opts = tornado.options.options.as_dict()
     ioloop = tornado.ioloop.IOLoop.instance()
 
-    def bug_updated(updates):
-        ioloop.add_callback(subscriptions.update, updates)
+    def bug_updated(update):
+        ioloop.add_callback(update_subscriptions, update)
 
     logging.info('Starting Pulse listener.')
     listener = ListenerThread(config.pulse_cfg, bug_updated)

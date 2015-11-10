@@ -6,10 +6,14 @@ var prodWsUri = 'wss://bugzfeed.mozilla.org/';
 var localWsUri = 'ws://localhost:5000/';
 var herokuWsUri = 'wss://bugzfeed.herokuapp.com/';
 
-var wsUri = herokuWsUri;
+// Set this to the base Bugzfeed websocket URI.
+var BaseWsUri = localWsUri;
 
-var bmoRestUrl = 'https://bugzilla.mozilla.org/rest';
+var bmoProdRestUrl = 'https://bugzilla.mozilla.org/rest';
+var bmoDevRestUrl = 'https://bugzilla-dev.allizom.org/rest';
+
 var websocket;
+var wsUri, bmoRestUrl;
 
 function init() {
   $('#subscribeform').submit(function() {
@@ -21,10 +25,15 @@ function init() {
     return false;
   });
   showDisconnected();
-  connect(wsUri);
 }
 
-function connect(uri) {
+function connect(dev) {
+  wsUri = BaseWsUri;
+  bmoRestUrl = bmoProdRestUrl;
+  if (dev) {
+    wsUri += 'dev/';
+    bmoRestUrl = bmoDevRestUrl;
+  }
   clearError();
   websocket = new WebSocket(wsUri);
   websocket.onopen = function(evt) { onOpen(evt); };
@@ -109,6 +118,7 @@ function commentHtml(comment) {
 }
 
 function attachmentHtml(attachment) {
+  console.log(attachment);
   var html = '<li>' + attachment.attacher + ': attachment ' + attachment.id +
         ' (' + attachment.description + ')';
   // Work around bug 937180.
@@ -172,8 +182,8 @@ function showDisconnected() {
   $('#controlscontainer').hide();
   $('#bugzfeed').text('');
   $('#feed').text('');
-  $('#connection').html('Disconnected. <button id="connect">connect</button>');
-  $('#connect').click(function() { connect(wsUri); });
+  $('#connection').html('Disconnected. <button id="connect">connect</button> <input id="dev" type="checkbox">dev exchange');
+  $('#connect').click(function() { connect($('#dev:checked').length > 0); });
 }
 
 function getVersion() {

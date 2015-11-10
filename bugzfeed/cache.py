@@ -15,9 +15,8 @@ engine = create_engine(config.database_url)
 Session = sessionmaker(bind=engine)
 
 
-class Message(Base):
+class BaseMessage(object):
 
-    __tablename__ = 'messages'
     id = Column(Integer, primary_key=True)
     message = Column(Text)
     bug = Column(Integer)
@@ -26,13 +25,13 @@ class Message(Base):
     @classmethod
     def update(cls, message):
         session = Session()
-        m = Message(message=json.dumps(message), bug=message['bug'],
-                    when=message['when'])
+        m = cls(message=json.dumps(message), bug=message['bug'],
+                when=message['when'])
         session.add(m)
-        last_id = session.query(Message.id).order_by(
-            Message.id.desc()).first().id
-        session.query(Message).filter(
-            Message.id <= (last_id - config.max_messages)).delete()
+        last_id = session.query(cls.id).order_by(
+            cls.id.desc()).first().id
+        session.query(cls).filter(
+            cls.id <= (last_id - config.max_messages)).delete()
         session.commit()
         session.close()
 
@@ -40,10 +39,17 @@ class Message(Base):
     def query(cls, bug_ids, since):
         '''Generator that yields messages, in JSON format.'''
         session = Session()
-        for m in session.query(Message.message).filter(
-                Message.bug.in_(bug_ids), Message.when >= since):
+        for m in session.query(cls.message).filter(
+                cls.bug.in_(bug_ids), cls.when >= since):
             yield m.message
         session.close()
 
+
+class Message(Base, BaseMessage):
+    __tablename__ = 'messages'
+
+
+class DevMessage(Base, BaseMessage):
+    __tablename__ = 'devmessages'
 
 Base.metadata.create_all(engine)

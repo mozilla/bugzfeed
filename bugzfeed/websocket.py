@@ -7,10 +7,12 @@ import json
 import tornado.websocket
 
 from bugzfeed import __version__ as bugzfeed_version
-from bugzfeed.subscriptions import subscriptions, BadBugId
+from bugzfeed.subscriptions import BadBugId, dev_subscriptions, subscriptions
 
 
-class WebSocketHandler(tornado.websocket.WebSocketHandler):
+class BaseWebSocketHandler(tornado.websocket.WebSocketHandler):
+
+    subscriptions = None
 
     def check_origin(self, origin):
         '''Accept all cross-origin traffic.'''
@@ -25,16 +27,16 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         cb_args = []
         try:
             if command == 'subscribe':
-                cb = subscriptions.subscribe(decoded['bugs'], self)
+                cb = self.subscriptions.subscribe(decoded['bugs'], self)
                 if decoded.get('since'):
-                    cb = subscriptions.catch_up
+                    cb = self.subscriptions.catch_up
                     cb_args = [decoded['bugs'], decoded['since'], self]
-                extra_attrs['bugs'] = subscriptions.subscriptions(self)
+                extra_attrs['bugs'] = self.subscriptions.subscriptions(self)
             elif command == 'unsubscribe':
-                subscriptions.unsubscribe(decoded['bugs'], self)
-                extra_attrs['bugs'] = subscriptions.subscriptions(self)
+                self.subscriptions.unsubscribe(decoded['bugs'], self)
+                extra_attrs['bugs'] = self.subscriptions.subscriptions(self)
             elif command == 'subscriptions':
-                extra_attrs['bugs'] = subscriptions.subscriptions(self)
+                extra_attrs['bugs'] = self.subscriptions.subscriptions(self)
             elif command == 'version':
                 extra_attrs['version'] = bugzfeed_version
             else:
@@ -53,4 +55,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             cb(*cb_args)
 
     def on_close(self):
-        subscriptions.connection_closed(self)
+        self.subscriptions.connection_closed(self)
+
+
+class WebSocketHandler(BaseWebSocketHandler):
+    subscriptions = subscriptions
+
+
+class DevWebSocketHandler(BaseWebSocketHandler):
+    subscriptions = dev_subscriptions
