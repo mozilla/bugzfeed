@@ -7,7 +7,7 @@ var localWsUri = 'ws://localhost:5000/';
 var herokuWsUri = 'wss://bugzfeed.herokuapp.com/';
 
 // Set this to the base Bugzfeed websocket URI.
-var BaseWsUri = localWsUri;
+var BaseWsUri = herokuWsUri;
 
 var bmoProdRestUrl = 'https://bugzilla.mozilla.org/rest';
 var bmoDevRestUrl = 'https://bugzilla-dev.allizom.org/rest';
