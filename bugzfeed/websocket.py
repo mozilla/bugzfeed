@@ -3,6 +3,7 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
+import logging
 
 import tornado.websocket
 
@@ -13,6 +14,9 @@ from bugzfeed.subscriptions import BadBugId, dev_subscriptions, subscriptions
 class BaseWebSocketHandler(tornado.websocket.WebSocketHandler):
 
     subscriptions = None
+
+    def open(self):
+        logging.info('WebSocket opened from %s.' % self.request.remote_ip)
 
     def check_origin(self, origin):
         '''Accept all cross-origin traffic.'''
